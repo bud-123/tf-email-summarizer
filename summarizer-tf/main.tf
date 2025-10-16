@@ -48,21 +48,21 @@ data "archive_file" "function_zip" {
 
 # Reference existing secrets (do not recreate)
 data "google_secret_manager_secret_version" "gmail_client_id" {
-  secret  = "gmail_client_id"
+  secret  = "GMAIL_CLIENT_ID"
   project = var.project_id
   
   depends_on = [google_project_service.secret_manager]
 }
 
 data "google_secret_manager_secret_version" "gmail_client_secret" {
-  secret  = "gmail_client_secret"
+  secret  = "GMAIL_CLIENT_SECRET"
   project = var.project_id
   
   depends_on = [google_project_service.secret_manager]
 }
 
 data "google_secret_manager_secret_version" "gmail_refresh_token" {
-  secret  = "gmail_refresh_token"
+  secret  = "GMAIL_REFRESH_TOKEN"
   project = var.project_id
   
   depends_on = [google_project_service.secret_manager]

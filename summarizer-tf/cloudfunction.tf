@@ -1,3 +1,22 @@
+# Storage bucket for function source
+resource "google_storage_bucket" "function_bucket" {
+  name     = "${var.project_id}-function-source"
+  location = var.region
+  
+  uniform_bucket_level_access = true
+  
+  depends_on = [google_project_service.cloud_functions]
+}
+
+# Upload function source to bucket
+resource "google_storage_bucket_object" "function_archive" {
+  name   = "function-${data.archive_file.function_zip.output_md5}.zip"
+  bucket = google_storage_bucket.function_bucket.name
+  source = data.archive_file.function_zip.output_path
+  
+  depends_on = [data.archive_file.function_zip]
+}
+
 # Deploy Cloud Function (2nd gen)
 resource "google_cloudfunctions2_function" "email_summarizer" {
   name     = var.function_name
@@ -8,9 +27,10 @@ resource "google_cloudfunctions2_function" "email_summarizer" {
     entry_point = var.function_entry_point
     
     source {
-      storage_source = null
-      repo_source    = null
-      local_source   = data.archive_file.function_zip.output_path
+      storage_source {
+        bucket = google_storage_bucket.function_bucket.name
+        object = google_storage_bucket_object.function_archive.name
+      }
     }
   }
   
